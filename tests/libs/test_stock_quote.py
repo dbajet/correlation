@@ -1,12 +1,15 @@
-from datetime import date
+from datetime import date, datetime, timezone
+from unittest import mock
 from unittest.mock import patch, call
 
-from data_structures.quote import Quote
+from immutables.quote import Quote
 from libs.stock_quote import StockQuote
 
 
 @patch('libs.stock_quote.HttpRequest')
-def test_last_year_quotes(http_request):
+@mock.patch('libs.stock_quote.datetime', wraps=datetime)
+def test_last_year_quotes(mock_datetime, http_request):
+    mock_datetime.now.return_value = datetime(2022, 11, 6, 15, 37, 21, 123456, tzinfo=None)  # now is offset-naive
     tested = StockQuote
 
     # no response

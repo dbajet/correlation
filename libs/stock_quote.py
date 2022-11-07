@@ -4,22 +4,22 @@ from datetime import datetime, timedelta, date, time
 from functools import lru_cache
 from typing import List, Dict
 
-from data_structures.quote import Quote
+from immutables.quote import Quote
 from libs.http_request import HttpRequest
 
 
 class StockQuote:
 
     @classmethod
-    @lru_cache
+    @lru_cache  # real production code would limit the cache to prevent memory leak
     def last_year_quotes(cls, symbol: str, until: date) -> List[Quote]:
         """
         Retrieve the quotes from the Nasdaq of the provided symbol for one year until the provided date
 
         The call is memoize.
 
-        :param until: date
         :param symbol: str
+        :param until: date
         :return: ascendant sorted list of Quotes
         """
         result: Dict[date, Quote] = {}
@@ -35,7 +35,7 @@ class StockQuote:
         for line in HttpRequest.get(url):
             # extract the list of the quotes
             table = json.loads(line).get('data', {}).get('tradesTable', {}).get('rows', [])
-            # regular expression to remove the first characters that are the devise
+            # regular expression to remove the first characters that are the currency
             pattern = r'[~0-9]+(?P<value>\d+\.\d+)'
             for record in table:
                 day = datetime.strptime(record['date'], '%m/%d/%Y').date()

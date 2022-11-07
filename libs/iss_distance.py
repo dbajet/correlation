@@ -6,14 +6,14 @@ from typing import List
 
 import ephem
 
-from data_structures.geo_location import GeoLocation
+from immutables.geo_location import GeoLocation
 from libs.http_request import HttpRequest
-from data_structures.tle import Tle
+from immutables.tle import Tle
 
 
 class IssDistance:
     @classmethod
-    @lru_cache
+    @lru_cache  # real production code would limit the cache to prevent memory leak
     def get_tle(cls) -> Tle:
         """
         Return the ISS part of the TLE from http://celestrak.org/NORAD/elements/stations.txt

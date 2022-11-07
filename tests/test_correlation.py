@@ -3,14 +3,14 @@ from unittest import mock
 from unittest.mock import patch, call
 
 from correlation import Correlation
-from data_structures.closing_location import ClosingLocation
-from data_structures.geo_location import GeoLocation
-from data_structures.quote import Quote
+from immutables.closing_location import ClosingLocation
+from immutables.geo_location import GeoLocation
+from immutables.quote import Quote
 
 
 @mock.patch('correlation.datetime', wraps=datetime)
 def test___init__(mock_datetime):
-    mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=None)  # now is offset-naive
     tests = [
         (date(2022, 11, 7), 'SYM', date(2022, 11, 7)),
         (date(2022, 11, 8), 'SYM', date(2022, 11, 8)),
@@ -38,7 +38,7 @@ def test___init__(mock_datetime):
 @patch('correlation.StockQuote.last_year_quotes')
 @mock.patch('correlation.datetime', wraps=datetime)
 def test_data(mock_datetime, last_year_quotes, get_distance_from):
-    mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=None)  # now is offset-naive
     last_year_quotes.return_value = [
         Quote(day=date(2022, 11, 7), close=351.3, open=347.9),
         Quote(day=date(2022, 11, 6), close=358.3, open=353.9),
@@ -75,20 +75,16 @@ def test_data(mock_datetime, last_year_quotes, get_distance_from):
     get_distance_from.reset_mock()
 
 
-@patch('correlation.Correlation.data')
-def test_matrix(data):
-    data.return_value = [
+def test_matrix():
+    data = [
         ClosingLocation(day=date(2022, 11, 7), wall_street_distance=101.2, stock_close=351.3),
         ClosingLocation(day=date(2022, 11, 6), wall_street_distance=102.7, stock_close=358.3),
         ClosingLocation(day=date(2022, 11, 3), wall_street_distance=103.5, stock_close=319.3),
     ]
-    tested = Correlation('SYM', date(2022, 11, 7))
-    result = tested.matrix()
+    tested = Correlation
+    result = tested.matrix(data)
     expected = [
         ['1.000000', '-0.647366'],
         ['-0.647366', '1.000000'],
     ]
     assert [[f'{column:1.6f}' for column in row] for row in result] == expected
-    calls = [call()]
-    assert data.mock_calls == calls
-    data.reset_mock()

@@ -4,8 +4,8 @@ from pytz import timezone as tz_of
 
 from numpy import corrcoef, ndarray
 
-from data_structures.closing_location import ClosingLocation
-from data_structures.geo_location import GeoLocation
+from immutables.closing_location import ClosingLocation
+from immutables.geo_location import GeoLocation
 from libs.iss_distance import IssDistance
 from libs.stock_quote import StockQuote
 
@@ -63,18 +63,18 @@ class Correlation:
                             datetime.combine(quote.day, wall_street_end_time).replace(tzinfo=wall_street_timezone).astimezone(tz=timezone.utc),
                         )
                     )
-                    for quote in quotes[idx:idx + 4]
+                    for quote in quotes[idx:idx + 5]
                 ]
                 break
         #
         return closings
 
-    def matrix(self) -> ndarray:
+    @classmethod
+    def matrix(cls, closings: List[ClosingLocation]) -> ndarray:
         """
         Compute the correlation matrix out of the tuples stock close / distance of the ISS to Wall street at the closing time
         :return: ndarray
         """
-        closings = self.data()
         x = [closing.stock_close for closing in closings]
         y = [closing.wall_street_distance for closing in closings]
         return corrcoef(x, y)

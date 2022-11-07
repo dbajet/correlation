@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 from unittest.mock import patch, call
 
-from data_structures.geo_location import GeoLocation
-from data_structures.tle import Tle
+from immutables.geo_location import GeoLocation
+from immutables.tle import Tle
 from libs.iss_distance import IssDistance
 
 
