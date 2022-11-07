@@ -1,5 +1,6 @@
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time, timedelta, timezone
 from typing import List
+from pytz import timezone as tz_of
 
 from numpy import corrcoef, ndarray
 
@@ -42,9 +43,10 @@ class Correlation:
         """
 
         wall_street_location = GeoLocation(latitude=40.706005, longitude=-74.008827)
-        wall_street_end_time = time(14, 0)
+        wall_street_end_time = time(16, 0)
+        wall_street_timezone = tz_of('US/Eastern')
 
-        # retrieve the quotes for APPL from yesterday and for 1 year back
+        # retrieve the quotes for the symbol from yesterday and for 1 year back
         yesterday = (datetime.now() + timedelta(days=-1))
         quotes = StockQuote.last_year_quotes(self.symbol, yesterday.date())
         # the quotes are sorted from the most recent to the oldest: retrieve the first date equals or before
@@ -56,12 +58,15 @@ class Correlation:
                     ClosingLocation(
                         day=quote.day,
                         stock_close=quote.close,
-                        wall_street_distance=IssDistance.get_distance_from(wall_street_location, datetime.combine(quote.day, wall_street_end_time))
+                        wall_street_distance=IssDistance.get_distance_from(
+                            wall_street_location,
+                            datetime.combine(quote.day, wall_street_end_time).replace(tzinfo=wall_street_timezone).astimezone(tz=timezone.utc),
+                        )
                     )
                     for quote in quotes[idx:idx + 4]
                 ]
                 break
-
+        #
         return closings
 
     def matrix(self) -> ndarray:

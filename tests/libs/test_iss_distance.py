@@ -72,3 +72,15 @@ def test_get_location():
     for now, expected in tests:
         result = tested.get_location(now)
         assert result == expected, f'--> {now.date().isoformat()}'
+
+
+def test_get_distance_from():
+    tested = IssDistance
+    tests = [
+        (datetime(2022, 2, 28, 17, 0, tzinfo=timezone.utc), GeoLocation(latitude=18.399686095651855, longitude=18.399686095651855), 0.0),
+        (datetime(2022, 8, 3, 17, 0, tzinfo=timezone.utc), GeoLocation(latitude=-48.0, longitude=-48.0), 49.29617699094003),
+        (datetime(2022, 11, 8, 17, 0, tzinfo=timezone.utc), GeoLocation(latitude=-20.0, longitude=-20.0), 15839.071058513526),
+    ]
+    for now, location, expected in tests:
+        result = tested.get_distance_from(location, now)
+        assert result == expected, f'--> {now.date().isoformat()}'
