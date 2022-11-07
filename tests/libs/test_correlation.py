@@ -2,13 +2,13 @@ from datetime import date, timezone, datetime, time
 from unittest import mock
 from unittest.mock import patch, call
 
-from correlation import Correlation
+from libs.correlation import Correlation
 from immutables.closing_location import ClosingLocation
 from immutables.geo_location import GeoLocation
 from immutables.quote import Quote
 
 
-@mock.patch('correlation.datetime', wraps=datetime)
+@mock.patch('libs.correlation.datetime', wraps=datetime)
 def test___init__(mock_datetime):
     mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=None)  # now is offset-naive
     tests = [
@@ -34,9 +34,9 @@ def test___init__(mock_datetime):
         mock_datetime.reset_mock()
 
 
-@patch('correlation.IssDistance.get_distance_from')
-@patch('correlation.StockQuote.last_year_quotes')
-@mock.patch('correlation.datetime', wraps=datetime)
+@patch('libs.correlation.IssDistance.get_distance_from')
+@patch('libs.correlation.StockQuote.last_year_quotes')
+@mock.patch('libs.correlation.datetime', wraps=datetime)
 def test_data(mock_datetime, last_year_quotes, get_distance_from):
     mock_datetime.now.return_value = datetime(2022, 11, 9, 15, 37, 21, 123456, tzinfo=None)  # now is offset-naive
     last_year_quotes.return_value = [

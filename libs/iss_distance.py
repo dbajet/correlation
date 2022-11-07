@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from functools import lru_cache
 from math import degrees
 from math import sin, cos, acos

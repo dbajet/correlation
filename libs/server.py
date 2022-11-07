@@ -1,11 +1,9 @@
 #! ../env_correlation/bin/python
-from datetime import datetime, date, timedelta
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from datetime import datetime, date
+from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
-from numpy import ndarray
-
-from correlation import Correlation
+from libs.correlation import Correlation
 
 
 class Server(BaseHTTPRequestHandler):
@@ -77,28 +75,13 @@ class Server(BaseHTTPRequestHandler):
 
     def do_GET(self):
         content_type = 'text/html' if self.requested_format() == self.HTML else 'text/plain'
-        correlation = Correlation('AAPL', self.requested_date())
+        correlation = Correlation('AAPL', self.requested_date())  # could be any stock free from the Nasdaq
+        # headers
         self.send_response(200)
         self.send_header('Content-type', content_type)
-        self.send_header('Content-type', content_type)
         self.end_headers()
+        # body
         if self.requested_format() == self.HTML:
             self.table_html(correlation)
         else:
             self.table_csv(correlation)
-
-
-if __name__ == "__main__":
-    hostname = "localhost"
-    server_port = 8080
-    webServer = HTTPServer((hostname, server_port), Server)
-    print(f'Server started...')
-    yesterday = (datetime.now() + timedelta(days=-1))
-    print(f'usage: http://{hostname}:{server_port}?date={yesterday.date().isoformat()}')
-    print(f'usage: http://{hostname}:{server_port}?date={yesterday.date().isoformat()}&format=html')
-    try:
-        webServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    webServer.server_close()
-    print('Server stopped.')
