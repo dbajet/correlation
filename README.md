@@ -9,6 +9,8 @@ A test web server serves the result either as a CSV or an HTML page.
 
 In addition of the correlation matrix, the result contains the data retrieved.
 
+_While the logic is mostly tested, the coverage provided when running the tests is just indicative that no runtime errors would occur._
+
 ## Running the application with Docker
 
 This is the preferred way as this limits the portability issues.
