@@ -25,7 +25,7 @@ class IssDistance:
         :return: Tles
         """
         iss_tle: List[str] = []
-        url = 'http://celestrak.org/NORAD/elements/stations.txt'
+        url = 'https://celestrak.org/NORAD/elements/stations.txt'
         count = 3
         for line in HttpRequest.get(url):
             if line.startswith('ISS') is True or count < 3:
